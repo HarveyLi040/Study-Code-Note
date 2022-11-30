@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>测试基本注解：</h1>
+<b>@PathVariable（路径变量）</b>
+<a href="car/3/owner/lisi">car/3/owner/lisi</a>
+<hr/>
+<b>@RequestHeader（获取请求头）</b>
+<a href="getRequestHeader">getRequestHeader</a>
+<hr/>
+
+<b>@RequestParam（获取请求参数）</b>
+<a href="getRequestParam?age=18&inters=basketball&inters=game">getRequestParam?age=18&inters=basketball&inters=game</a>
+<hr/>
+
+<b>@CookieValue（获取cookie值）</b>
+<a href="getCookieValue">getCookieValue</a>
+<hr/>
+
+<b>@RequestBody（获取请求体[POST]）</b>
+<form action="getRequestBody" method="post">
+    用户名：<input name="userName"/> <br>
+    邮箱：<input name="email"/>
+    <input type="submit" value="提交"/>
+</form>
+<hr/>
+
+<b>@RequestAttribute（获取request域属性）</b>
+<a href="/getRequestAttribute">/getRequestAttribute</a>
+<hr/>
+
+<b>@MatrixVariable（矩阵变量）</b></br>
+<a href="/cars/sell;low=34;brand=byd;brand=audi;brand=yd">/cars/sell;low=34;brand=byd;brand=audi;brand=yd</a></br>
+<a href="/cars/sell;low=34;brand=byd,audi,yd">/cars/sell;low=34;brand=byd,audi,yd</a></br>
+<a href="/cars/sell;low=34;brand=byd;brand=audi;brand=yd">/cars/sell;low=34;brand=byd;brand=audi;brand=yd</a></br>
+<a href="/boss/1;age=20/2;age=10">/boss/1;age=20/2;age=10</a></br>
+<hr/>
+<b>测试map、model</b>（map、model里面的数据会被放在request的请求域）
+<a href="/TestMapAndModel">/TestMapAndModel</a>
+<hr/>
+<b>测试封装自定义对象POJO</b>
+<form action="/saveuser" method="post">
+    姓名： <input name="userName" value="zhangsan"/> <br/>
+    年龄： <input name="age" value="18"/> <br/>
+    生日： <input name="birth" value="2019/12/10"/> <br/>
+    宠物姓名：<input name="pet.name" value="阿猫"/><br/>
+    宠物年龄：<input name="pet.age" value="5"/>
+    <input type="submit" value="保存"/>
+</form>
+<br>
+<b>测试自定义 Converter</b>
+<form action="/testConverter" method="post">
+    姓名： <input name="userName" value="zhangsan"/> <br/>
+    年龄： <input name="age" value="18"/> <br/>
+    生日： <input name="birth" value="2019/12/10"/> <br/>
+    宠物： <input name="pet" value="啊猫,3"/>
+    <input type="submit" value="保存"/>
+</form>
+</body>
+</html>

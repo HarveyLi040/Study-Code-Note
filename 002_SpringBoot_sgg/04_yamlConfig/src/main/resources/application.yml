@@ -1,0 +1,33 @@
+person:
+  userName : zhangsan
+  boss : true
+  birth : 1998/12/9
+  age : 18
+  interests :
+    - 篮球
+    - 足球
+    - 画画
+  animal : [cat,dog]
+      #  score:
+      #    english: 80
+      #    math: 90
+  score : {english : 80,math : 90}
+  salary :
+        - 10000
+        - 10000
+  Pet :
+    name : wwDog
+    weight : 20
+  allPets :
+      sick :
+        - {name : mmCat,weight : 5}
+        - name : mumuPig
+          weight : 50
+      health :
+        - {name: miumiuSheep,weight: 35}
+        - {name: guguBird,weight: 2}
+
+
+
+
+
