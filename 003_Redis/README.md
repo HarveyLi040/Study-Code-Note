@@ -1,8 +1,6 @@
-# Redis快速入门
+# Redis入门：Redis的常见命令和客户端使用
 
-Redis的常见命令和客户端使用
-
-# 1.初识Redis
+# 1.Redis简介
 
 Redis是一种键值型的NoSql数据库，这里有两个关键字：
 
@@ -16,28 +14,20 @@ Redis是一种键值型的NoSql数据库，这里有两个关键字：
 
 
 
-而NoSql则是相对于传统关系型数据库而言，有很大差异的一种数据库。
+而NoSql则是相对于传统关系型数据库而言，有很大差异的一种数据库
 
+## 1.1.NoSQL简介
 
-
-## 1.1.认识NoSQL
-
-```
-**NoSql**可以翻译做Not Only Sql（不仅仅是SQL），或者是No Sql（非Sql的）数据库。
-是相对于传统关系型数据库而言，有很大差异的一种特殊的数据库，因此也称之为**非关系型数据库**。
-```
+NoSql可以翻译做Not Only Sql（不仅仅是SQL），或者是No Sql（非Sql的）数据库
+是相对于传统关系型数据库而言，有很大差异的一种特殊的数据库，因此也称之为非关系型数据库
 
 ### 1.1.1.结构化与非结构化
 
-
-
-```properties
 传统关系型数据库是结构化数据，每一张表都有严格的约束信息：字段名、字段数据类型、字段约束等等信息，插入的数据必须遵守这些约束：
-```
 
 ![img](https://img-blog.csdnimg.cn/1055802c7d364858aee0678b67847318.png)
 
-而NoSql则对数据库格式没有严格约束，往往形式松散，自由。
+而NoSql则对数据库格式没有严格约束，往往形式松散，自由
 
 可以是键值型：
 
@@ -112,11 +102,11 @@ Redis是一种键值型的NoSql数据库，这里有两个关键字：
 
 
 
-### 1.1.5.总结
+### 1.1.5.关系型数据库 VS 非关系型数据库
 
 除了上述四点以外，在存储方式、扩展性、查询性能上关系型与非关系型也都有着显著差异，总结如下：
 
-![](D:\learn\7、2022版Redis入门到精通\Redis-笔记资料\01-入门篇\讲义\Redis注释版\assets\kZP40dQ.png)
+![img](https://img-blog.csdnimg.cn/4768f1e0cd9d4da7b8a0676f83e31aba.png)
 
 - 存储方式
   - 关系型数据库基于磁盘进行存储，会有大量的磁盘IO，对性能有一定影响
@@ -130,7 +120,7 @@ Redis是一种键值型的NoSql数据库，这里有两个关键字：
 
 
 
-## 1.2.认识Redis
+## 1.2.Redis简介
 
 Redis诞生于2009年全称是**Re**mote  **D**ictionary **S**erver 远程词典服务器，是一个基于内存的键值型NoSQL数据库。
 
@@ -149,7 +139,7 @@ Redis的官方网站地址：https://redis.io/
 
 
 
-## 1.3.安装Redis
+## 1.3.Redis安装
 
 大多数企业都是基于Linux服务器来部署项目，而且Redis官方也没有提供Windows版本的安装包。因此课程中我们会基于Linux系统来安装Redis.
 
@@ -169,11 +159,18 @@ yum install -y gcc tcl
 
 然后将课前资料提供的Redis安装包上传到虚拟机的任意目录：
 
-![](D:\learn\7、2022版Redis入门到精通\Redis-笔记资料\01-入门篇\讲义\Redis注释版\assets\SyjanS5.png)
+<table align="center">
+    <tr>
+        <th ><img src="https://img-blog.csdnimg.cn/0b0771acdc3a4945b9b493864aae657b.png" > <b>order-service目录结构</b></th>
+                <th ><img src="https://img-blog.csdnimg.cn/77426f807ed9418fb9e115bd7634aa08.png" > <b>user-service目录结构</b></th>
+    </tr>
+    </table>
+
+![img](https://img-blog.csdnimg.cn/c36e9a960ed44ce19994694bdedd3a3e.png)
 
 例如，我放到了/usr/local/src 目录：
 
-![](D:\learn\7、2022版Redis入门到精通\Redis-笔记资料\01-入门篇\讲义\Redis注释版\assets\01DTNCf.png)
+![img](https://img-blog.csdnimg.cn/b465b60240ed46afb712f356d06c47fa.png)
 
 解压缩：
 
@@ -183,7 +180,7 @@ tar -xzf redis-6.2.6.tar.gz
 
 解压后：
 
-![image-20211211080339076](D:\learn\7、2022版Redis入门到精通\Redis-笔记资料\01-入门篇\讲义\Redis注释版\assets\8V6zvCD.png)
+![img](https://img-blog.csdnimg.cn/d352bd7531d0414da5422befcf1395e0.png)
 
 进入redis目录：
 
@@ -200,8 +197,6 @@ make && make install
 ```
 
 如果没有出错，应该就安装成功了。
-
-
 
 默认的安装路径是在 `/usr/local/bin`目录下：
 
