@@ -175,7 +175,7 @@ yum install -y gcc tcl
 解压缩：
 
 ```sh
-tar -xzf redis-6.2.6.tar.gz
+tar -zxvf redis-6.2.6.tar.gz
 ```
 
 解压后：
@@ -251,7 +251,9 @@ cp redis.conf redis.conf.bck
 然后修改redis.conf文件中的一些配置：
 
 ```properties
-# 允许访问的地址，默认是127.0.0.1，会导致只能在本地访问。修改为0.0.0.0则可以在任意IP访问，生产环境不要设置为0.0.0.0
+# 允许访问的地址，默认是127.0.0.1，会导致只能在本地访问
+# 设为0.0.0.0表示任意一台计算机都可以访问这个redis服务器
+# 修改为0.0.0.0则可以在任意IP访问，生产环境不要设置为0.0.0.0
 bind 0.0.0.0
 # 守护进程，修改为yes后即可后台运行
 daemonize yes 
@@ -276,32 +278,32 @@ maxmemory 512mb
 logfile "redis.log"
 ```
 
-
-
 启动Redis：
 
 ```sh
 # 进入redis安装目录 
 cd /usr/local/src/redis-6.2.6
-# 启动
+# 启动：  redis-server命令指定配置文件名启动对应配置的redis服务 
 redis-server redis.conf
+# 查看是否启动成功（查看是否有redis进程）
+ps -ef | grep redis
 ```
 
-
+![img](https://img-blog.csdnimg.cn/1b1b471cc2804dc1ae94e7428ae70b79.png)
 
 停止服务：
 
 ```sh
+# 方法一：kill -9命令杀死进程
+kill -9 15556
 # 利用redis-cli来执行 shutdown 命令，即可停止 Redis 服务，
 # 因为之前配置了密码，因此需要通过 -u 来指定密码
 redis-cli -u 123321 shutdown
 ```
 
-
-
 ### 1.3.6.开机自启
 
-我们也可以通过配置来实现开机自启。
+我们也可以通过配置来实现开机自启
 
 首先，新建一个系统服务文件：
 
@@ -325,17 +327,22 @@ PrivateTmp=true
 WantedBy=multi-user.target
 ```
 
+<table align="center">
+    <b>利用edit-plus创建并修改redis.service文件</b></th>
+    <tr>
+    <th ><img src="https://img-blog.csdnimg.cn/2f2650edf3f84be0bdda57a39efd83ed.png" > 
+    </tr>
+    </table>
 
 
-然后重载系统服务：
+
+然后重载系统服务，使配置生效：
 
 ```sh
 systemctl daemon-reload
 ```
 
-
-
-现在，我们可以用下面这组命令来操作redis了：
+配置生效后就可以用下面这组命令来操作redis了：
 
 ```sh
 # 启动
@@ -350,10 +357,11 @@ systemctl status redis
 
 
 
-执行下面的命令，可以让redis开机自启：
+执行下面两个命令，可以让redis开机自启：
 
 ```sh
 systemctl enable redis
+systemctl start redis
 ```
 
 
@@ -386,9 +394,14 @@ redis-cli [options] [commonds]
 
 不指定commond时，会进入`redis-cli`的交互控制台：
 
+```sh
+# 通过命令使用密码连接特点主机的特点端口
+redis-cli -h 192.168.54.133 -p 6379 -a 123321
+```
+
 ![img](https://img-blog.csdnimg.cn/1c644d60eee94272ba198f7275c1e968.png)
 
-
+![img](https://img-blog.csdnimg.cn/6dd1924d21214851be550be8c28ab2d8.png)
 
 ### 1.4.2.图形化桌面客户端
 
@@ -396,13 +409,11 @@ GitHub上的大神编写了Redis的图形化桌面客户端，地址：https://g
 
 不过该仓库提供的是RedisDesktopManager的源码，并未提供windows安装包。
 
-
-
 在下面这个仓库可以找到安装包：https://github.com/lework/RedisDesktopManager-Windows/releases
 
 
 
-### 1.4.3.安装
+### 1.4.3.安装图形化桌面客户端
 
 在课前资料中可以找到Redis的图形化桌面客户端：
 
@@ -495,6 +506,107 @@ since: 1.0.0
 group: generic
 ```
 
+课堂代码如下
+
+* KEYS
+
+```sh
+127.0.0.1:6379> keys *
+1) "name"
+2) "age"
+127.0.0.1:6379>
+
+# 查询以a开头的key
+127.0.0.1:6379> keys a*
+1) "age"
+127.0.0.1:6379>
+```
+
+**贴心小提示：在生产环境下，不推荐使用keys 命令，因为这个命令在key过多的情况下，效率不高**
+
+* DEL
+
+```sh
+127.0.0.1:6379> help del
+
+  DEL key [key ...]
+  summary: Delete a key
+  since: 1.0.0
+  group: generic
+
+127.0.0.1:6379> del name #删除单个
+(integer) 1  #成功删除1个
+
+127.0.0.1:6379> keys *
+1) "age"
+
+127.0.0.1:6379> MSET k1 v1 k2 v2 k3 v3 #批量添加数据
+OK
+
+127.0.0.1:6379> keys *
+1) "k3"
+2) "k2"
+3) "k1"
+4) "age"
+
+127.0.0.1:6379> del k1 k2 k3 k4
+(integer) 3   #此处返回的是成功删除的key，由于redis中只有k1,k2,k3 所以只成功删除3个，最终返回
+127.0.0.1:6379>
+
+127.0.0.1:6379> keys * #再查询全部的key
+1) "age"	#只剩下一个了
+127.0.0.1:6379>
+```
+
+**贴心小提示：同学们在拷贝代码的时候，只需要拷贝对应的命令哦~**
+
+* EXISTS
+
+```sh
+127.0.0.1:6379> help EXISTS
+
+  EXISTS key [key ...]
+  summary: Determine if a key exists
+  since: 1.0.0
+  group: generic
+
+127.0.0.1:6379> exists age
+(integer) 1
+
+127.0.0.1:6379> exists name
+(integer) 0
+```
+
+* EXPIRE
+
+**贴心小提示**：内存非常宝贵，对于一些数据，我们应当给他一些过期时间，当过期时间到了之后，他就会自动被删除~
+
+```sh
+127.0.0.1:6379> expire age 10
+(integer) 1
+
+127.0.0.1:6379> ttl age
+(integer) 8
+
+127.0.0.1:6379> ttl age
+(integer) 6
+
+127.0.0.1:6379> ttl age
+(integer) -2
+
+127.0.0.1:6379> ttl age
+(integer) -2  #当这个key过期了，那么此时查询出来就是-2 
+
+127.0.0.1:6379> keys *
+(empty list or set)
+
+127.0.0.1:6379> set age 10 #如果没有设置过期时间
+OK
+
+127.0.0.1:6379> ttl age
+(integer) -1  # ttl的返回值就是-1
+```
+
 
 
 ## 2.2.String类型
@@ -527,9 +639,107 @@ String的常见命令有：
 - SETNX：添加一个String类型的键值对，前提是这个key不存在，否则不执行
 - SETEX：添加一个String类型的键值对，并且指定有效期
 
+**贴心小提示**：以上命令除了INCRBYFLOAT 都是常用命令
 
+* SET 和GET: 如果key不存在则是新增，如果存在则是修改
 
+```java
+127.0.0.1:6379> set name Rose  //原来不存在
+OK
 
+127.0.0.1:6379> get name 
+"Rose"
+
+127.0.0.1:6379> set name Jack //原来存在，就是修改
+OK
+
+127.0.0.1:6379> get name
+"Jack"
+```
+
+* MSET和MGET
+
+```java
+127.0.0.1:6379> MSET k1 v1 k2 v2 k3 v3
+OK
+
+127.0.0.1:6379> MGET name age k1 k2 k3
+1) "Jack" //之前存在的name
+2) "10"   //之前存在的age
+3) "v1"
+4) "v2"
+5) "v3"
+```
+
+* INCR和INCRBY和DECY
+
+```java
+127.0.0.1:6379> get age 
+"10"
+
+127.0.0.1:6379> incr age //增加1
+(integer) 11
+    
+127.0.0.1:6379> get age //获得age
+"11"
+
+127.0.0.1:6379> incrby age 2 //一次增加2
+(integer) 13 //返回目前的age的值
+    
+127.0.0.1:6379> incrby age 2
+(integer) 15
+    
+127.0.0.1:6379> incrby age -1 //也可以增加负数，相当于减
+(integer) 14
+    
+127.0.0.1:6379> incrby age -2 //一次减少2个
+(integer) 12
+    
+127.0.0.1:6379> DECR age //相当于 incr 负数，减少正常用法
+(integer) 11
+    
+127.0.0.1:6379> get age 
+"11"
+
+```
+
+* SETNX
+
+```java
+127.0.0.1:6379> help setnx
+
+  SETNX key value
+  summary: Set the value of a key, only if the key does not exist
+  since: 1.0.0
+  group: string
+
+127.0.0.1:6379> set name Jack  //设置名称
+OK
+127.0.0.1:6379> setnx name lisi //如果key不存在，则添加成功
+(integer) 0
+127.0.0.1:6379> get name //由于name已经存在，所以lisi的操作失败
+"Jack"
+127.0.0.1:6379> setnx name2 lisi //name2 不存在，所以操作成功
+(integer) 1
+127.0.0.1:6379> get name2 
+"lisi"
+```
+
+* SETEX
+
+```sh
+127.0.0.1:6379> setex name 10 jack
+OK
+
+127.0.0.1:6379> ttl name
+(integer) 8
+
+127.0.0.1:6379> ttl name
+(integer) 7
+
+127.0.0.1:6379> ttl name
+(integer) 5
+```
 
 ### 2.2.2.Key结构
 
@@ -545,7 +755,9 @@ Redis的key允许有多个单词形成层级结构，多个单词之间用':'隔
 	项目名:业务名:类型:id
 ```
 
-这个格式并非固定，也可以根据自己的需求来删除或添加词条。这样以来，我们就可以把不同类型的数据区分开了。从而避免了key的冲突问题。
+![img](https://img-blog.csdnimg.cn/73e7bb67d1064c3c848f24035f732bc1.png)
+
+这个格式并非固定，也可以根据自己的需求来删除或添加词条。这样以来，我们就可以把不同类型的数据区分开了。从而避免了key的冲突问题
 
 例如我们的项目名称叫 heima，有user和product两种不同类型的数据，我们可以这样定义key：
 
@@ -597,7 +809,94 @@ Hash的常见命令有：
 - HINCRBY:让一个hash类型key的字段值自增并指定步长
 - HSETNX：添加一个hash类型的key的field值，前提是这个field不存在，否则不执行
 
+**贴心小提示**：哈希结构也是我们以后实际开发中常用的命令哟
 
+* HSET和HGET
+
+```java
+127.0.0.1:6379> HSET heima:user:3 name Lucy//大key是 heima:user:3 小key是name，小value是Lucy
+(integer) 1
+127.0.0.1:6379> HSET heima:user:3 age 21// 如果操作不存在的数据，则是新增
+(integer) 1
+127.0.0.1:6379> HSET heima:user:3 age 17 //如果操作存在的数据，则是修改
+(integer) 0
+127.0.0.1:6379> HGET heima:user:3 name 
+"Lucy"
+127.0.0.1:6379> HGET heima:user:3 age
+"17"
+```
+
+* HMSET和HMGET
+
+```java
+127.0.0.1:6379> HMSET heima:user:4 name HanMeiMei
+OK
+127.0.0.1:6379> HMSET heima:user:4 name LiLei age 20 sex man
+OK
+127.0.0.1:6379> HMGET heima:user:4 name age sex
+1) "LiLei"
+2) "20"
+3) "man"
+```
+
+* HGETALL
+
+```java
+127.0.0.1:6379> HGETALL heima:user:4
+1) "name"
+2) "LiLei"
+3) "age"
+4) "20"
+5) "sex"
+6) "man"
+```
+
+* HKEYS和HVALS
+
+```java
+127.0.0.1:6379> HKEYS heima:user:4
+1) "name"
+2) "age"
+3) "sex"
+127.0.0.1:6379> HVALS heima:user:4
+1) "LiLei"
+2) "20"
+3) "man"
+```
+
+* HINCRBY
+
+```java
+127.0.0.1:6379> HINCRBY  heima:user:4 age 2
+(integer) 22
+127.0.0.1:6379> HVALS heima:user:4
+1) "LiLei"
+2) "22"
+3) "man"
+127.0.0.1:6379> HINCRBY  heima:user:4 age -2
+(integer) 20
+```
+
+* HSETNX
+
+```java
+127.0.0.1:6379> HSETNX heima:user4 sex woman
+(integer) 1
+127.0.0.1:6379> HGETALL heima:user:3
+1) "name"
+2) "Lucy"
+3) "age"
+4) "17"
+127.0.0.1:6379> HSETNX heima:user:3 sex woman
+(integer) 1
+127.0.0.1:6379> HGETALL heima:user:3
+1) "name"
+2) "Lucy"
+3) "age"
+4) "17"
+5) "sex"
+6) "woman"
+```
 
 
 
@@ -614,9 +913,7 @@ Redis中的List类型与Java中的LinkedList类似，可以看做是一个双向
 
 常用来存储一个有序数据，例如：朋友圈点赞列表，评论列表等。
 
-
-
-List的常见命令有：
+**List的常见命令有：**
 
 - LPUSH key element ... ：向列表左侧插入一个或多个元素
 - LPOP key：移除并返回列表左侧的第一个元素，没有则返回nil
@@ -625,9 +922,33 @@ List的常见命令有：
 - LRANGE key star end：返回一段角标范围内的所有元素
 - BLPOP和BRPOP：与LPOP和RPOP类似，只不过在没有元素时等待指定时间，而不是直接返回nil
 
+![img](https://img-blog.csdnimg.cn/66bbbc7697de43c3b5723ff068f0c87f.png)
 
+* LPUSH和RPUSH
 
+```java
+127.0.0.1:6379> LPUSH users 1 2 3
+(integer) 3
+127.0.0.1:6379> RPUSH users 4 5 6
+(integer) 6
+```
 
+* LPOP和RPOP
+
+```java
+127.0.0.1:6379> LPOP users
+"3"
+127.0.0.1:6379> RPOP users
+"6"
+```
+
+* LRANGE
+
+```java
+127.0.0.1:6379> LRANGE users 1 2
+1) "1"
+2) "4"
+```
 
 ## 2.5.Set类型
 
@@ -664,24 +985,81 @@ Set的常见命令有：
 
 ![img](https://img-blog.csdnimg.cn/e39fc02020c94738b28128ea950666aa.png)
 
+**具体命令**
+
+```java
+127.0.0.1:6379> sadd s1 a b c
+(integer) 3
+127.0.0.1:6379> smembers s1
+1) "c"
+2) "b"
+3) "a"
+127.0.0.1:6379> srem s1 a
+(integer) 1
+    
+127.0.0.1:6379> SISMEMBER s1 a
+(integer) 0
+    
+127.0.0.1:6379> SISMEMBER s1 b
+(integer) 1
+    
+127.0.0.1:6379> SCARD s1
+(integer) 2
+```
+
+**案例**
+
+* 将下列数据用Redis的Set集合来存储：
+* 张三的好友有：李四.王五.赵六
+* 李四的好友有：王五.麻子.二狗
+* 利用Set的命令实现下列功能：
+* 计算张三的好友有几人
+* 计算张三和李四有哪些共同好友
+* 查询哪些人是张三的好友却不是李四的好友
+* 查询张三和李四的好友总共有哪些人
+* 判断李四是否是张三的好友
+* 判断张三是否是李四的好友
+* 将李四从张三的好友列表中移除
+
+```java
+127.0.0.1:6379> SADD zs lisi wangwu zhaoliu
+(integer) 3
+    
+127.0.0.1:6379> SADD ls wangwu mazi ergou
+(integer) 3
+    
+127.0.0.1:6379> SCARD zs
+(integer) 3
+    
+127.0.0.1:6379> SINTER zs ls
+1) "wangwu"
+    
+127.0.0.1:6379> SDIFF zs ls
+1) "zhaoliu"
+2) "lisi"
+    
+127.0.0.1:6379> SUNION zs ls
+1) "wangwu"
+2) "zhaoliu"
+3) "lisi"
+4) "mazi"
+5) "ergou"
+    
+127.0.0.1:6379> SISMEMBER zs lisi
+(integer) 1
+    
+127.0.0.1:6379> SISMEMBER ls zhangsan
+(integer) 0
+    
+127.0.0.1:6379> SREM zs lisi
+(integer) 1
+    
+127.0.0.1:6379> SMEMBERS zs
+1) "zhaoliu"
+2) "wangwu"
+```
 
 
-练习：
-
-1. 将下列数据用Redis的Set集合来存储：
-
-- 张三的好友有：李四、王五、赵六
-- 李四的好友有：王五、麻子、二狗
-
-2. 利用Set的命令实现下列功能：
-
-- 计算张三的好友有几人
-- 计算张三和李四有哪些共同好友
-- 查询哪些人是张三的好友却不是李四的好友
-- 查询张三和李四的好友总共有哪些人
-- 判断李四是否是张三的好友
-- 判断张三是否是李四的好友
-- 将李四从张三的好友列表中移除
 
 ## 2.6.SortedSet类型
 
@@ -694,8 +1072,6 @@ SortedSet具备下列特性：
 - 查询速度快
 
 因为SortedSet的可排序特性，经常被用来实现排行榜这样的功能。
-
-
 
 SortedSet的常见命令有：
 
@@ -742,7 +1118,7 @@ Jack 85, Lucy 89, Rose 82, Tom 95, Jerry 78, Amy 92, Miles 76
 
 ![img](https://img-blog.csdnimg.cn/0f0f6e527e524b7991ea262f188215bd.png)
 
-标记为*的就是推荐使用的java客户端，包括：
+标记为❤的就是推荐使用的java客户端，包括：
 
 - Jedis和Lettuce：这两个主要是提供了Redis命令对应的API，方便我们操作Redis，而SpringDataRedis又对这两种做了抽象和封装，因此我们后期会直接以SpringDataRedis来学习。
 - Redisson：是在Redis基础上实现了分布式的可伸缩的java数据结构，例如Map、Queue等，而且支持跨进程的同步机制：Lock、Semaphore等待，比较适合用来实现特殊的功能需求。
@@ -751,9 +1127,13 @@ Jack 85, Lucy 89, Rose 82, Tom 95, Jerry 78, Amy 92, Miles 76
 
 Jedis的官网地址： https://github.com/redis/jedis
 
-### 3.1.1.快速入门
+**入门案例详细步骤**
 
-我们先来个快速入门：
+案例分析：
+
+0）创建工程：
+
+
 
 1）引入依赖：
 
@@ -832,7 +1212,9 @@ void tearDown() {
 
 ### 3.1.2.连接池
 
-Jedis本身是线程不安全的，并且频繁的创建和销毁连接会有性能损耗，因此我们推荐大家使用Jedis连接池代替Jedis的直连方式。
+Jedis本身是线程不安全的，并且频繁的创建和销毁连接会有性能损耗，因此我们推荐大家使用Jedis连接池代替Jedis的直连方式
+
+有关池化思想，并不仅仅是这里会使用，很多地方都有，比如说数据库连接池，比如tomcat中的线程池，这些都是池化思想的体现
 
 ```java
 package com.heima.jedis.util;
@@ -858,6 +1240,38 @@ public class JedisConnectionFactory {
         return jedisPool.getResource();
     }
 }
+```
+
+**代码说明：**
+
+- 1） JedisConnectionFacotry：工厂设计模式是实际开发中非常常用的一种设计模式，我们可以使用工厂，去降低代的耦合，比如Spring中的Bean的创建，就用到了工厂设计模式
+
+- 2）静态代码块：随着类的加载而加载，确保只能执行一次，我们在加载当前工厂类的时候，就可以执行static的操作完成对 连接池的初始化
+
+- 3）最后提供返回连接池中连接的方法
+
+**改造原始代码\代码说明:**
+
+1.在我们完成了使用工厂设计模式来完成代码的编写之后，我们在获得连接时，就可以通过工厂来获得。而不用直接去new对象，降低耦合，并且使用的还是连接池对象
+
+2.当我们使用了连接池后，当我们关闭连接其实并不是关闭，而是将Jedis还回连接池的
+
+```java
+    @BeforeEach
+    void setUp(){
+        //建立连接
+        /*jedis = new Jedis("127.0.0.1",6379);*/
+        jedis = JedisConnectionFacotry.getJedis();
+         //选择库
+        jedis.select(0);
+    }
+
+   @AfterEach
+    void tearDown() {
+        if (jedis != null) {
+            jedis.close();
+        }
+    }
 ```
 
 
@@ -965,10 +1379,10 @@ spring:
     password: 123321
     lettuce:
       pool:
-        max-active: 8
-        max-idle: 8
-        min-idle: 0
-        max-wait: 100ms
+        max-active: 8  #最大连接
+        max-idle: 8   #最大空闲连接
+        min-idle: 0   #最小空闲连接
+        max-wait: 100ms #连接等待时间
 ```
 
 #### 3）注入RedisTemplate
@@ -1004,9 +1418,17 @@ class RedisStringTests {
 }
 ```
 
+**贴心小提示：SpringDataJpa使用起来非常简单，记住如下几个步骤即可**
+
+SpringDataRedis的使用步骤：
+
+* 引入spring-boot-starter-data-redis依赖
+* 在application.yml配置Redis信息
+* 注入RedisTemplate
 
 
-### 3.2.2.自定义序列化
+
+### 3.2.2.数据序列化器
 
 RedisTemplate可以接收任意Object作为值写入Redis：
 
@@ -1062,6 +1484,10 @@ public class RedisConfig {
 
 ### 3.2.3.StringRedisTemplate
 
+为了在反序列化时知道对象的类型，JSON序列化器会将类的class类型写入json结果中，存入Redis，会带来额外的内存开销。
+
+为了减少内存的消耗，我们可以采用手动序列化的方式，换句话说，就是不借助默认的序列化器，而是我们自己来控制序列化的动作，同时，我们只采用String的序列化器，这样，在存储value时，我们就不需要在内存中就不用多存储数据，从而节约我们的内存空间
+
 为了节省内存空间，我们可以不使用JSON序列化器来处理value，而是统一使用String序列化器，要求只能存储String类型的key和value。当需要存储Java对象时，手动完成对象的序列化和反序列化。
 
 ![img](https://img-blog.csdnimg.cn/ec7594c6ceb643ff81f9c47f94a3d8c5.png)
@@ -1104,3 +1530,44 @@ void testSaveUser() throws JsonProcessingException {
 
 
 
+此时我们再来看一看存储的数据，小伙伴们就会发现那个class数据已经不在了，节约了我们的空间~
+
+![1653054945211](D:\learn\7、2022版Redis入门到精通\Redis-笔记资料\01-入门篇\讲义\Redis注释版\Redis.assets\1653054945211.png)
+
+最后小总结：
+
+RedisTemplate的两种序列化实践方案：
+
+* 方案一：
+  * 自定义RedisTemplate
+  * 修改RedisTemplate的序列化器为GenericJackson2JsonRedisSerializer
+
+* 方案二：
+  * 使用StringRedisTemplate
+  * 写入Redis时，手动把对象序列化为JSON
+  * 读取Redis时，手动把读取到的JSON反序列化为对象
+
+### 3.2.4 Hash结构操作
+
+在基础篇的最后，咱们对Hash结构操作一下，收一个小尾巴，这个代码咱们就不再解释啦
+
+马上就开始新的篇章~~~进入到我们的Redis实战篇
+
+```java
+@SpringBootTest
+class RedisStringTests {
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+
+    @Test
+    void testHash() {
+        stringRedisTemplate.opsForHash().put("user:400", "name", "虎哥");
+        stringRedisTemplate.opsForHash().put("user:400", "age", "21");
+
+        Map<Object, Object> entries = stringRedisTemplate.opsForHash().entries("user:400");
+        System.out.println("entries = " + entries);
+    }
+}
+```
