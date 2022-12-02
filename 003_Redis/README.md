@@ -1220,6 +1220,8 @@ Jack 85, Lucy 89, Rose 82, Tom 95, Jerry 78, Amy 92, Miles 76
 
 Jedis的官网地址： https://github.com/redis/jedis
 
+### 3.1.1 Jedis入门案例
+
 **入门案例详细步骤**
 
 案例分析：
@@ -1309,7 +1311,7 @@ void tearDown() {
 
 ### 3.1.2.连接池
 
-Jedis本身是线程不安全的，并且频繁的创建和销毁连接会有性能损耗，因此我们推荐大家使用Jedis连接池代替Jedis的直连方式
+**Jedis本身是线程不安全的**，并且频繁的创建和销毁连接会有性能损耗，因此我们推荐大家使用Jedis连接池代替Jedis的直连方式
 
 有关池化思想，并不仅仅是这里会使用，很多地方都有，比如说数据库连接池，比如tomcat中的线程池，这些都是池化思想的体现
 
@@ -1366,7 +1368,7 @@ public class JedisConnectionFactory {
    @AfterEach
     void tearDown() {
         if (jedis != null) {
-            jedis.close();
+            jedis.close();   // 并非关闭，而是将连接归还到连接池
         }
     }
 ```
@@ -1393,7 +1395,7 @@ SpringDataRedis中提供了RedisTemplate工具类，其中封装了各种对Redi
 
 ### 3.2.1.快速入门
 
-SpringBoot已经提供了对SpringDataRedis的支持，使用非常简单。
+SpringBoot已经提供了对SpringDataRedis的支持，使用非常简单
 
 首先，新建一个maven项目，然后按照下面步骤执行：
 
