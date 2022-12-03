@@ -10,6 +10,9 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
+/**
+ * 简单文本邮件
+ */
 public class SimpleMail {
     public static void main(String[] args) throws MessagingException {
         // 卫星

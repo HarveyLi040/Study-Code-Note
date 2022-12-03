@@ -11,6 +11,9 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
+/**
+ * 发送带附件的邮件
+ */
 @Slf4j
 public class AttachmentsMail {
     public static void main(String[] args) throws MessagingException {

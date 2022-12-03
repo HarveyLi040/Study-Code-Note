@@ -9,6 +9,9 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.util.Properties;
 
+/**
+ * 发送html邮件
+ */
 public class htmlMail {
     public static void main(String[] args) throws MessagingException {
         // 卫星

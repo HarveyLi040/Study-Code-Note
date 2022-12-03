@@ -12,6 +12,9 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
+/**
+ * 对邮件功能的简单封装
+ */
 @Slf4j
 public class MailSender {
     /**
@@ -49,12 +52,11 @@ public class MailSender {
         message.setSubject(mailSubject);
 
         // 设置 html
-        Multipart multipart = null;
+        Multipart multipart =  new MimeMultipart();
 
         // 添加邮件内容
         BodyPart Content = new MimeBodyPart();
         Content.setContent(mailContent,"text/html;charset=utf-8");
-        multipart = new MimeMultipart();
         multipart.addBodyPart(Content);
 
         // 添加附件
