@@ -22,6 +22,7 @@ public class MailSender {
      * @param files
      */
     public void sendEmail(String from,
+                          String nickname,
                           String[] mailTo,
                           String mailSubject,
                           String mailContent,
@@ -71,8 +72,8 @@ public class MailSender {
         message.setContent(multipart);
 
         // 设置邮件发送方
-        message.setFrom(new InternetAddress(from));
-
+        /*message.setFrom(new InternetAddress(from));*/
+          message.setFrom(new InternetAddress(from,nickname));
         // 设置邮件接收方
         InternetAddress[] recipients = new InternetAddress[mailTo.length];
         for (int i = 0; i < recipients.length; i++) {
