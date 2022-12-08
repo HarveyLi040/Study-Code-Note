@@ -1,160 +1,172 @@
-# 1.简本概念
+# 1.SpringSecurity简介
 
-### 1.1 认证
+### 1.1. 安全框架概述
 
-**认证相关概念**
+什么是安全框架?
 
-- 进入移动互联网时代，大家每天都在刷手机，常用的软件有微信、支付宝、头条等，下边拿微信来举例子说明认证相关的基本概念，在初次使用微信前需要注册成为微信用户，然后输入账号和密码即可登录微信，输入账号和密码登录微信的过程就是认证
+解决系统安全问题的框架。如果没有安全框架，我们需要手动处理每个资源的访问控制非常麻烦。使用安全框架，我们可以通过配置的方式实现对资源的访问限制
 
-**系统为什么要认证?**
+### 1.2.常用安全框架
 
-- 认证是为了保护系统的隐私数据与资源，用户的身份合法方可访问该系统的资源
+- Spring Security: Spring家族一员。是一个能够为基于Spring的企业应用系统提供声明式的安全访问控制解决方案的安全框架。它提供了一组可以在Spring应用上下文中配置的Bean，充分利用了Spring IoC，DI (控制反转Inversion of Control，DI:Dependency Injecton依赖注入)和AOP(面向切面编程）功能，为应用系统提供声明式的安全访问控制功能，减少了为企业系统安全控制编写大量重复代码的工作。
 
-**认证∶**
+-  Apache Shiro: 一个功能强大且易于使用的Java安全框架,提供了认证,授权,加密,和会话管理
 
-- 用户认证就是判断一个用户的身份是否合法的过程，用户去访问系统资源时系统要求验证用户的身份信息，身份合法方可继续访问，不合法则拒绝访问。常见的用户身份认证方式有∶用户名密码登录，二维码登录，手机短信登录，指纹认证等方式
+### 1.3.Spring security简介
 
-### 1.2 会话
-
-用户认证通过后，为了避免用户的每次操作都进行认证可将用户的信息保证在会话中。会话就是系统为了保持当前用户的登录状态所提供的机制，常见的有**基于session方式**、**基于token方式**等。
-
-**基于session的认证方式如下图:**
-
-session认证方式的交互流程是，用户认证成功后，在服务端生成用户相关的数据保存在session(当前会话)中，发给客户端的sesssion_id存放到cookie中，这样用户客户端请求时带上session_id就可以验证服务器端是否存在session数据，以此完成用户的合法校验，当用户退出系统或session过期销毁时,客户端的session_id也就无效了
+Spring Security是一个高度自定义的安全框架。利用Spring loC / DI和AOP功能，为系统提供了声明式安全访问控制功能，减少了为系统安全而编写大量重复代码的工作。使用Spring Secruity 的原因有很多，但大部分都是发现了javaEE的 Servlet规范或EJB规范中的安全功能缺乏典型企业应用场景。同时认识到他们在WAR或EAR级别无法移植。因此如果你更换服务器环境，还有大星工作去重新配置你的应用程序。使用Spring Security解决了这些问题，也为你提供许多其他有用的、可定制的安全功能。正如你可能知道的两个应用程序的两个主要区域是"认证"和"授权”(或者访问控制)。这两点也是Spring Security重要核心功能。"认证”，是建立一个他声明的主体的过程(一个"主体"一般是指用户，设备或一些可以在你的应用程序中执行动作的其他系统)，通俗点说就是系统认为用户是否能登录。"授权"指确定一个主体是否允许在你的应用程序执行一个动作的过程。通俗点讲就是系统判断用户是否有权限去做某些事情。
 
 
+# 2.快速入门
 
-![img](https://img-blog.csdnimg.cn/2dedf49e52da40138d1cff2ba227cfc2.png)
+导入SpringSecurity组件：
 
+```xml
+       <!-- SpringSecurity组件-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+```
 
+编写表单index.html
 
-**基于token方式如下图︰**
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录表单</title>
+</head>
+<body>
+<form action="/login" method="post">
+    用户名：<input type="text" name="username"/><br/>
+    密码：<input type="password" name="=password"/><br/>
+    <input type="submit" value="登录">
+</form>
+</body>
+</html>
+```
 
-**token认证方式**的交互流程是，用户认证成功后，服务端生成一个token发给客户端，客户端可以放到cookie或localStorage等存储中，每次请求时带上token，服务端收到token通过验证后即可确认用户身份
+编写表单main.html
 
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+登录成功！！！
+</body>
+</html>
+```
 
-
-![img](https://img-blog.csdnimg.cn/5e6bc7f496364d2d8586c6e911a23c5a.png)
-
-
-
-基于session的认证方式由Servlet规范定制，服务端要存储session信息需要占用内存资源，客户端需要支持cookie ;基于token的方式则一般不需要服务端存储token，并且不限制客户端的存储方式。如今移动互联网时代更多类型的客户端需要接入系统，系统多是采用前后端分离的架构进行实现，所以基于token的方式更适合。
-
-### 1.3 授权
-
-还拿微信来举例子，微信登录成功后用户即可使用微信的功能，比如，发红包、发朋友圈、添加好友等，没有绑定银行卡的用户是无法发送红包的，绑定银行卡的用户才可以发红包，发红包功能、发朋友圈功能都是微信的资源即功能资源，用户拥有发红包功能的权限才可以正常使用发送红包功能，拥有发朋友圈功能的权限才可以使用发朋友圈功能，这个根据用户的权限来控制用户使用资源的过程就是授权
-
-**为什么要授权?**
-认证是为了保证用户身份的合法性，授权则是为了更细粒度的对隐私数据进行划分，授权是在认证通过后发生的，控制不同的用户能够访问不同的资源
-
-**授权︰**
-
-授权是用户认证通过根据用户的权限来控制用户访问资源的过程，拥有资源的访问权限则正常访问，没有权限则拒绝访问
-
-### 1.4 授权的数据模型
-
-如何进行授权即如何对用户访问资源进行控制，首先需要学习授权相关的数据模型。授权可简单理解为Who对What(which)进行How操作，包括如下∶
-
-**Who，即主体(Subject )**，主体一般是指用户，也可以是程序，需要访问系统中的资源
-
-**What，即资源(Resource )**，如系统菜单、页面、按钮、代码方法、系统商品信息、系统订单信息等。系统菜单、页面、按钮、代码方法都属于系统功能资源，对于web系统每个功能资源通常对应一个URL;系统商品信息、系统订单信息都属于实体资源（数据资源），实体资源由资源类型和资源实例组成，比如商品信息为资源类型，商品编号为O01的商品为资源实例。
-
-**How，权限/许可（ Permission )**，规定了用户对资源的操作许可，权限离开资源没有意义，如用户查询权限、用户添加权限、某个代码方法的调用权限、编号为001的用户的修改权限等，通过权限可知用户对哪些资源都有哪些操作许可
-
-
-
-**主体、资源、权限**关系如下图:
-
-![img](https://img-blog.csdnimg.cn/6d5f7259cbea4d0e964600020ee972a0.png)
-
-
-
-**主体、资源、权限相关的数据模型如下∶**
-
-- 主体（用户id、账号、密码、.….)
-- 资源（资源id、资源名称、访问地址、...)
-- 权限（权限id、权限标识、权限名称、资源id、... )
-- 角色(角色id、角色名称、... )
-- 角色和权限关系(角色id、权限id、... )
-- 主体（用户)和角色关系(用户id、角色id、... )
-
-
-
-主体（用户)、资源、权限关系如下图:
-
-![img](https://img-blog.csdnimg.cn/7109feb15c7d4903abfe13c054024a29.png)
-
-
-
-通常企业开发中将资源和权限表合并为一张权限表，如下︰
-
-- 资源（资源id、资源名称、访问地址、... )
-- 权限（权限id、权限标识、权限名称、资源id、... )
-
-合并为∶
-
-- 权限（权限id、权限标识、权限名称、资源名称、资源访问地址、...
-
-修改后数据模型之间的关系如下图∶
-
-![img](https://img-blog.csdnimg.cn/19b439f99bd544ef8ab2d7c3539cb82a.png)
-
-
-
-### 1.5 RBAC
-
-如何实现授权?业界通常基于RBAC实现授权
-
-#### 1.5.1基于角色的访问控制
-
-RBAC基于角色的访问控制( Role-Based Access Control )是按角色进行授权，比如∶主体的角色为总经理可以查询企业运营报表，查询员工工资信息等，访问控制流程如下:
-
-![img](https://img-blog.csdnimg.cn/5eb18e50ed5b45f786e93e441edd858f.png)
-
-根据上图中的判断逻辑，授权代码可表示如下：
+编写访问控制代码：
 
 ```java
-if(主体.hasRole("总经理角色id")){
-查询工资
+package com.lsl.code.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+public class LoginController {
+    /**
+     * 登录
+     * @return
+     */
+     @RequestMapping("login")
+    public String login(){
+         System.out.println("执行登录方法");
+         return "redirect:main.html";
+     }
 }
 ```
 
-如果上图中查询工资所需要的角色变化为总经理和部门经理，此时就需要修改判断逻辑为“判断用户的角色是否是 总经理或部门经理”，修改代码如下：
+启动项目，访问`http://localhost:8080`，返回的界面并非自定义的登录页面，而是由SpringSecurity提供的登录页面`http://localhost:8080/login`：
+
+![img](https://img-blog.csdnimg.cn/36d986e4d2ac4f6cb2c504323c0218d6.png)
+
+项目启动时会在控制台打印`Using generated security password: a68a8d3c-01a3-4cdd-bcfd-77cb5521fe71` ,在上表中填入用户名`user`,密码`a68a8d3c-01a3-4cdd-bcfd-77cb5521fe71`后返回自定义的登录页面：
+
+![img](https://img-blog.csdnimg.cn/bd7e36b001c049cb91c2fd3ca644f672.png)
+
+SpringSecurity常用类PasswordEncoder 测试：
 
 ```java
-if(主体.hasRole("总经理角色id") || 主体.hasRole("部门经理角色id")){
-查询工资
+@Test
+void contextLoads() {
+    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    String encode = passwordEncoder.encode("123");
+    // 打印密码"123"加密后得到的结果
+    System.out.println(encode); //$2a$10$BBp139W6cWAhWuA63vINsutEqaoCBH1DbIW7MbFa9dbV7fK42vwES
+    // 判断原密码和加密后的密码是否匹配
+    boolean matches = passwordEncoder.matches("123",encode);
+    System.out.println(matches); // true
 }
 ```
 
-根据上边的例子发现，当需要修改角色的权限时就需要修改授权的相关代码，系统可扩展性差
 
 
+自定义登录逻辑：
 
-#### 1.5.2基于资源的访问控制
-
-RBAC基于资源的访问控制(Resource-Based Access Control )是按资源（或权限）进行授权，比如∶用户必须具有查询工资权限才可以查询员工工资信息等，访问控制流程如下︰
-
+PasswordEncoder
 
 
-![img](https://img-blog.csdnimg.cn/0b8c4ad80b374554bdf7383114a0ff2a.png)
-
-
-
-根据上图中的判断，授权代码可以表示为：
 
 ```java
-if(主体.hasPermission("查询工资权限标识")){
-查询工资
+package com.lsl.code.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+@Configuration
+public class SecurityConfig {
+    @Bean
+    public PasswordEncoder getPassword(){
+         return new BCryptPasswordEncoder();
+    }
+
 }
 ```
 
-优点：系统设计时定义好查询工资的权限标识，即使查询工资所需要的角色变化为总经理和部门经理也不需要修改 授权代码，系统可扩展性强
+自定义登录逻辑实现：
 
-# 2. 基于Session的认证方式
+```java
+package com.lsl.code.service;
 
-### 2.1 认证流程
+import jakarta.annotation.Resource;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-基于Session认证方式的流程是，用户认证成功后，在服务端生成用户相关的数据保存在session(当前会话)，而发给客户端的sesssion_id存放到cookie 中，这样用客户端请求时带上session_id就可以验证服务器端是否存在session数据，以此完成用户的合法校验。当用户退出系统或session过期销毁时,客户端的session_id也就无效了。下图是session认证方式的流程图︰
+public class UserDetailsServiceImpl implements UserDetailsService {
+    @Resource
+    private PasswordEncoder passwordEncoder;
 
-![img](https://img-blog.csdnimg.cn/071c02ff2a8343f08143a92bcf5f3ecb.png)
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // 1、查询数据库判断用户名是否存在，如果不存在就抛出异常UsernameNotFoundException
+        if("admin".equals(username)){
+            throw new UsernameNotFoundException("用户名不存在");
+        }
+        // 2、如果用户名存在，就把查询出来的密码（注册时经加密存入数据库）进行解析，或者直接把密码放入构造方法
+        String password = passwordEncoder.encode("123");
+        return new User(username,password,AuthorityUtils.commaSeparatedStringToAuthorityList( "admin,normal"));
+    }
+}
+```
+
+![img](https://img-blog.csdnimg.cn/9510184e21404270bd7da12166811324.png)
