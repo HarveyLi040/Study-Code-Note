@@ -1,4 +1,4 @@
-## 3.2.SprngDataRedis客户端
+## 1.SprngDataRedis客户端
 
 SpringData是Spring中数据操作的模块，包含对各种数据库的集成，其中对Redis的集成模块就叫做SpringDataRedis，官网地址：https://spring.io/projects/spring-data-redis
 
@@ -16,7 +16,7 @@ SpringDataRedis中提供了RedisTemplate工具类，其中封装了各种对Redi
 
 
 
-### 3.2.1.快速入门
+### 1.1.快速入门
 
 SpringBoot已经提供了对SpringDataRedis的支持，使用非常简单
 
@@ -150,7 +150,7 @@ SpringDataRedis的使用步骤：
 
 
 
-### 3.2.2.数据序列化器
+### 1.2.数据序列化器
 
 RedisTemplate可以接收任意Object作为值写入Redis：
 
@@ -204,7 +204,7 @@ public class RedisConfig {
 
 整体可读性有了很大提升，并且能将Java对象自动的序列化为JSON字符串，并且查询时能自动把JSON反序列化为Java对象。不过，其中记录了序列化时对应的class名称，目的是为了查询时实现自动反序列化。这会带来额外的内存开销。
 
-### 3.2.3.StringRedisTemplate
+### 1.3.StringRedisTemplate
 
 为了在反序列化时知道对象的类型，JSON序列化器会将类的class类型写入json结果中，存入Redis，会带来额外的内存开销。
 
@@ -269,7 +269,7 @@ RedisTemplate的两种序列化实践方案：
   * 写入Redis时，手动把对象序列化为JSON
   * 读取Redis时，手动把读取到的JSON反序列化为对象
 
-### 3.2.4 Hash结构操作
+### 1.4 Hash结构操作
 
 在基础篇的最后，咱们对Hash结构操作一下，收一个小尾巴，这个代码咱们就不再解释啦
 
