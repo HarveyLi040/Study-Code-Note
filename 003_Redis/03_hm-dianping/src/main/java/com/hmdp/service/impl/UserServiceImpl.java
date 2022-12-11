@@ -74,6 +74,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
         // 4.保存用户信息到session中（用户存不存在都要做）
         session.setAttribute("user",user);
+        // 直接返回登录成功而不用返回用户凭证，因为session自带sessionID，起到凭证的作用
         return Result.ok();
     }
 
