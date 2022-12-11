@@ -58,11 +58,85 @@
 
 ![1653059409865](https://cdn.jsdelivr.net/gh/HarveyLi040/images/D:%5Cgithub%5Cimages1653059409865.png)
 
+**注**：将前端部署在nginx上，PC端先向发起nginx发起请求，nginx再向部署在tomcat上的后端服务发起请求，后端服务会和数据库进行交互来获取数据
+
 #### 1.1.3、导入后端项目
 
 在资料中提供了一个项目源码：
 
 ![1653060237073](https://cdn.jsdelivr.net/gh/HarveyLi040/images/D:%5Cgithub%5Cimages202212110431931.png)
+
+启动项目后访问`http://localhost:8081/shop-type/list`,返回如下数据：
+
+```json
+{
+success: true,
+data: [
+{
+id: 1,
+name: "美食",
+icon: "/types/ms.png",
+sort: 1
+},
+{
+id: 2,
+name: "KTV",
+icon: "/types/KTV.png",
+sort: 2
+},
+{
+id: 3,
+name: "丽人·美发",
+icon: "/types/lrmf.png",
+sort: 3
+},
+{
+id: 10,
+name: "美睫·美甲",
+icon: "/types/mjmj.png",
+sort: 4
+},
+{
+id: 5,
+name: "按摩·足疗",
+icon: "/types/amzl.png",
+sort: 5
+},
+{
+id: 6,
+name: "美容SPA",
+icon: "/types/spa.png",
+sort: 6
+},
+{
+id: 7,
+name: "亲子游乐",
+icon: "/types/qzyl.png",
+sort: 7
+},
+{
+id: 8,
+name: "酒吧",
+icon: "/types/jiuba.png",
+sort: 8
+},
+{
+id: 9,
+name: "轰趴馆",
+icon: "/types/hpg.png",
+sort: 9
+},
+{
+id: 4,
+name: "健身运动",
+icon: "/types/jsyd.png",
+sort: 10
+}
+]
+}
+```
+
+
 
 #### 1.1.4、导入前端工程
 
@@ -71,6 +145,18 @@
 #### 1.1.5 运行前端项目
 
 ![1653060588190](https://cdn.jsdelivr.net/gh/HarveyLi040/images/D:%5Cgithub%5Cimages1653060588190.png)
+
+步骤一：在项目路径下执行`start nginx.exe`命令
+
+![img](https://cdn.jsdelivr.net/gh/HarveyLi040/images/D:%5Cgithub%5Cimages202212111511837.png)
+
+
+
+步骤二：打开开发者模式后选择手机模式(前端是一个手机app项目)，输入`http://localhost:8080`即可看到前端页面
+
+
+
+![008](https://cdn.jsdelivr.net/gh/HarveyLi040/images/D:%5Cgithub%5Cimages202212111511156.png)
 
 
 
