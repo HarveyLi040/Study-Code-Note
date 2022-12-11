@@ -162,6 +162,8 @@ sort: 10
 
 ### 1.2 、基于Session实现登录流程
 
+![1653066208144](https://cdn.jsdelivr.net/gh/HarveyLi040/images/D:%5Cgithub%5Cimages1653066208144.png)
+
 **发送验证码：**
 
 用户在提交手机号后，会校验手机号是否合法，如果不合法，则要求用户重新输入手机号
@@ -174,11 +176,9 @@ sort: 10
 
 **校验登录状态:**
 
-用户在请求时候，会从cookie中携带者JsessionId到后台，后台通过JsessionId从session中拿到用户信息，如果没有session信息，则进行拦截，如果有session信息，则将用户信息保存到threadLocal中，并且放行
+用户在请求的时候，会从cookie中携带者JsessionId到后台，后台通过JsessionId从session中拿到用户信息，如果没有session信息，则进行拦截，如果有session信息，则将用户信息保存到threadLocal中，并且放行
 
 
-
-![1653066208144](https://cdn.jsdelivr.net/gh/HarveyLi040/images/D:%5Cgithub%5Cimages1653066208144.png)
 
 ### 1.3 、实现发送短信验证码功能
 
