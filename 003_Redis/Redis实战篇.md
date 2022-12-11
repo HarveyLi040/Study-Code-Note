@@ -456,7 +456,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         User user = new User();
         user.setPhone(phone);
         user.setNickName(USER_NICK_NAME_PREFIX + RandomUtil.randomString(8));
-        // 2.保存用户
+        // 2.利用MyBatis-plus提供的save()方法 保存用户
         save(user);
         return user;
     }
