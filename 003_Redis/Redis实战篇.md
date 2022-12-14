@@ -978,7 +978,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 }
 ```
 
-报错解决：登录过程中出现类型转换异常，报错`java.lang.ClassCastException: class java.lang.Long cannot be cast to class java.lang.String (java.lang.Long and java.lang.String are in module java.base of loader 'bootstrap')`，类型转换异常是因为UserDTO的id字段时Long类型，而`stringRedisTemplate`要求key和value都必须为String类型。解决方法如下：
+报错解决：登录过程中出现类型转换异常，报错`java.lang.ClassCastException: class java.lang.Long cannot be cast to class java.lang.String (java.lang.Long and java.lang.String are in module java.base of loader 'bootstrap')`，类型转换异常是因为UserDTO的id字段是Long类型，而`stringRedisTemplate`要求key和value都必须为String类型。解决方法如下：
 
 ```java
         // Map<String, Object> userMap = BeanUtil.beanToMap(userDTO); 此行还需改为如下代码，否则报错
@@ -1068,6 +1068,174 @@ public class LoginInterceptor implements HandlerInterceptor {
     }
 }
 ```
+
+**RefreshTokenInterceptor详细代码 + 注释**
+
+```java
+package com.hmdp.interceptor;
+
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
+import com.hmdp.dto.UserDTO;
+import com.hmdp.utils.RedisConstants;
+import com.hmdp.utils.UserHolder;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.lang.Nullable;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * 拦截器
+ */
+public class RefreshTokenInterceptor implements HandlerInterceptor {
+
+/*在拦截器中注入StringRedisTemplate：
+     无法使用@Resource等注解在LoginInterceptor中实现注入（拦截器不在spring bean容器中，而是new出来的）
+     解决：将要注入的类声明为属性，并提供构造方法，之后在MvcConfig注入对象
+     最后在MvcConfig中通过构造方法创建拦截器，这样就为拦截器注入了对象*/
+    private StringRedisTemplate stringRedisTemplate;
+
+    public RefreshTokenInterceptor(StringRedisTemplate stringRedisTemplate) {
+        this.stringRedisTemplate = stringRedisTemplate;
+    }
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+/*没用redis之前：
+        // 1.获取session
+        HttpSession session = request.getSession();
+
+        // 2.获取session中的用户
+        Object user = session.getAttribute("user");
+
+        // 3.判断用户是否存在
+        if(user == null){
+            // 不存在则拦截,并返回401状态码(未授权)
+            response.setStatus(401);
+            return false;
+        }  // 存在：
+
+        // 4.保存用户信息到ThreadLocal
+        UserHolder.saveUser((UserDTO) user);
+        // 放行
+        return true;*/
+
+//利用redis代替sessions实现登录验证：
+        // 1.获取请求头中的token
+        String token = request.getHeader("authorization");
+        if (StrUtil.isBlank(token)) {
+            return true;
+        }
+        // 2.基于token获取redis中的用户
+        String key = RedisConstants.LOGIN_USER_KEY + token;
+        Map<Object, Object> userMap = stringRedisTemplate.opsForHash().entries(key);
+
+        // 判断用户是否存在
+        if (userMap.isEmpty()) {
+            // 一律放行
+            return true;
+        }
+
+        // 3.将查询到的Hash数据转为UserDTO对象
+        UserDTO userDTO = BeanUtil.fillBeanWithMap(userMap, new UserDTO(), false);
+
+        // 保存用户信息到ThreadLocal
+        UserHolder.saveUser(userDTO);
+
+        // 4.刷新token有效期
+        stringRedisTemplate.expire(key,RedisConstants.LOGIN_USER_TTL, TimeUnit.MINUTES);
+        return true;
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable ModelAndView modelAndView) throws Exception {
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable Exception ex) throws Exception {
+        // 移除用户
+        UserHolder.removeUser();
+    }
+}
+```
+
+**LoginInterceptor详细代码+注释**
+
+```java
+package com.hmdp.interceptor;
+import com.hmdp.utils.UserHolder;
+import org.springframework.lang.Nullable;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+/**
+ * 拦截器
+ */
+public class LoginInterceptor implements HandlerInterceptor {
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        // 1.依据ThreadLocal中是否有用户，判断是否需要拦截
+        if (UserHolder.getUser() == null) {
+            // 没有，需要拦截，返回状态码
+            response.setStatus(401);
+            return false;
+        }
+        // 有用户，则放行
+        return true;
+    }
+}
+```
+
+**MvcConfig拦截器配置类**
+
+```java
+package com.hmdp.config;
+import com.hmdp.interceptor.LoginInterceptor;
+import com.hmdp.interceptor.RefreshTokenInterceptor;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import javax.annotation.Resource;
+/**
+ * 配置
+ */
+@Configuration
+public class MvcConfig implements WebMvcConfigurer {
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        // token刷新拦截器
+        registry.addInterceptor(new RefreshTokenInterceptor(stringRedisTemplate))
+                .addPathPatterns("/**").order(0);
+        // 登录拦截器
+        registry.addInterceptor(new LoginInterceptor())
+                .excludePathPatterns(
+                        "/user/code",
+                        "/user/login",
+                        "/blog/hot",
+                        "/shop/**",
+                        "/shop-type/**",
+                        "/upload/**",
+                        "/voucher/**"
+                ).order(1);
+    }
+}
+```
+
+
+
+**注：**
+
+> 第一个拦截器`RefreshTokenInterceptor`虽然拦截一切请求，但是只用于token刷新，他会放行所有请求，保证所有请求都触发token刷新。拦截器执行顺序：默认情况下所有拦截器的order属性值都为0，此时按添加顺序执行。也可以给order属性指定值，0rder值越小优先级越高
 
 
 
