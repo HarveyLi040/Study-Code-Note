@@ -34,7 +34,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-/*没有redis之前：
+/*没用redis之前：
         // 1.获取session
         HttpSession session = request.getSession();
 
