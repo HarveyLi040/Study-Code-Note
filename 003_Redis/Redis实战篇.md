@@ -1281,13 +1281,13 @@ public class MvcConfig implements WebMvcConfigurer {
 
 实际开发中,会构筑多级缓存来使系统运行速度进一步提升,例如:本地缓存与redis中的缓存并发使用
 
-**浏览器缓存**：主要是存在于浏览器端的缓存
+**浏览器缓存**：  主要是存在于浏览器端的缓存
 
-**应用层缓存：**可以分为tomcat本地缓存，比如之前提到的map，或者是使用redis作为缓存
+**应用层缓存**：  可以分为tomcat本地缓存，比如之前提到的map，或者是使用redis作为缓存
 
-**数据库缓存：**在数据库中有一片空间是 buffer pool，增改查数据都会先加载到mysql的缓存中
+**数据库缓存**： 在数据库中有一片空间是 buffer pool，增改查数据都会先加载到mysql的缓存中
 
-**CPU缓存：**当代计算机最大的问题是 cpu性能提升了，但内存读写速度没有跟上，所以为了适应当下的情况，增加了cpu的L1，L2，L3级的缓存
+**CPU缓存**： 当代计算机最大的问题是 cpu性能提升了，但内存读写速度没有跟上，所以为了适应当下的情况，增加了cpu的L1，L2，L3级的缓存
 
 ![](https://cdn.jsdelivr.net/gh/HarveyLi040/images/D:%5Cgithub%5Cimagesimage-20220523212915666.png)
 
