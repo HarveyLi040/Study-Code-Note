@@ -1293,10 +1293,6 @@ public class MvcConfig implements WebMvcConfigurer {
 
 
 
-
-
-
-
 ### 2.2 添加商户缓存
 
 在我们查询商户信息时，我们是直接操作从数据库中去进行查询的，大致逻辑是这样，直接查询数据库那肯定慢咯，所以我们需要增加缓存
@@ -1321,7 +1317,119 @@ public Result queryShopById(@PathVariable("id") Long id) {
 
 ![1653322190155](https://cdn.jsdelivr.net/gh/HarveyLi040/images/D:%5Cgithub%5Cimages1653322190155.png)
 
+**ShopController代码：**
 
+```java
+package com.hmdp.controller;
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.hmdp.dto.Result;
+import com.hmdp.entity.Shop;
+import com.hmdp.service.IShopService;
+import com.hmdp.utils.SystemConstants;
+import org.springframework.web.bind.annotation.*;
+import javax.annotation.Resource;
+@RestController
+@RequestMapping("/shop")
+public class ShopController {
+    @Resource
+    public IShopService shopService;
+    /**
+     * 根据id查询商铺信息
+     * @param id 商铺id
+     * @return 商铺详情数据
+     */
+    @GetMapping("/{id}")
+    public Result queryShopById(@PathVariable("id") Long id) {
+        return shopService.queryById(id);
+    }
+}
+```
+
+**IShopService接口定义**
+
+```java
+package com.hmdp.service;
+import com.hmdp.dto.Result;
+import com.hmdp.entity.Shop;
+import com.baomidou.mybatisplus.extension.service.IService;
+/**
+ * <p>
+ *  服务类
+ * </p>
+ */
+public interface IShopService extends IService<Shop> {
+    Result queryById(Long id);
+}
+
+```
+
+**接口实现类ShopServiceImpl**
+
+```java
+package com.hmdp.service.impl;
+
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
+import com.hmdp.dto.Result;
+import com.hmdp.entity.Shop;
+import com.hmdp.mapper.ShopMapper;
+import com.hmdp.service.IShopService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Service;
+import javax.annotation.Resource;
+import static com.hmdp.utils.RedisConstants.CACHE_SHOP_KEY;
+/**
+ * <p>
+ *  服务实现类
+ * </p>
+ * @author 虎哥
+ * @since 2021-12-22
+ */
+@Service
+public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IShopService {
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
+    @Override
+    public Result queryById(Long id) {
+        // 1.从redis查询商铺缓存
+        // 最好用hash结构，此处用字符串也可以
+        String key = CACHE_SHOP_KEY + id;
+        String shopJson = stringRedisTemplate.opsForValue().get(key);
+
+        // 2.判断是否存在
+        if (StrUtil.isNotBlank(shopJson)) {
+            // 3.存在，直接返回
+            Shop shop = JSONUtil.toBean(shopJson,Shop.class);
+            return Result.ok(shop);
+        }
+        // 4.不存在，查询数据库
+        Shop shop = getById(id);
+
+        if (shop == null) {
+            // 5.数据库中不存在，返回错误
+            return Result.fail("店铺不存在！");
+        }
+
+        // 6.数据库中存在，写入redis
+        stringRedisTemplate.opsForValue().set(key,JSONUtil.toJsonStr(shop));
+        // 7.返回成功信息
+        return Result.ok(shop);
+    }
+}
+```
+
+访问`http://localhost:8080/shop-detail.html?id=1`，成功访问页面并向redis存入信息
+
+ <table align="center">
+    <tr>
+        <td ><img src="https://img-blog.csdnimg.cn/eb783aa57fb945aea73ba628d2a7656e.png" > <b>访问返回页面</b></td>
+        <td ><img src="https://img-blog.csdnimg.cn/7ae6b6d89e5e4e10bcd32a54b455afa5.png" > <b>redis成功存入信息</b></td>
+    </tr>
+    </table>
 
 ### 2.3 缓存更新策略
 
