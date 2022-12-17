@@ -1435,11 +1435,11 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 
 缓存更新是redis为了节约内存而设计出来的一个东西，主要是因为内存数据宝贵，当我们向redis插入太多数据，此时就可能会导致缓存中的数据过多，所以redis会对部分数据进行更新，或者把他叫为淘汰更合适。
 
-**内存淘汰：**redis自动进行，当redis内存达到咱们设定的max-memery的时候，会自动触发淘汰机制，淘汰掉一些不重要的数据(可以自己设置策略方式)
+**内存淘汰**： redis自动进行，当redis内存达到咱们设定的max-memery的时候，会自动触发淘汰机制，淘汰掉一些不重要的数据(可以自己设置策略方式)
 
-**超时剔除：**当我们给redis设置了过期时间ttl之后，redis会将超时的数据进行删除，方便咱们继续使用缓存
+**超时剔除**： 当我们给redis设置了过期时间ttl之后，redis会将超时的数据进行删除，方便咱们继续使用缓存
 
-**主动更新：**我们可以手动调用方法把缓存删掉，通常用于解决缓存和数据库不一致问题
+**主动更新**： 我们可以手动调用方法把缓存删掉，通常用于解决缓存和数据库不一致问题
 
 ![1653322506393](https://cdn.jsdelivr.net/gh/HarveyLi040/images/D:%5Cgithub%5Cimages1653322506393.png)
 
@@ -1449,13 +1449,13 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 
 由于我们的**缓存的数据源来自于数据库**,而数据库的**数据是会发生变化的**,因此,如果当数据库中**数据发生变化,而缓存却没有同步**,此时就会有**一致性问题存在**,其后果是:
 
-用户使用缓存中的过时数据,就会产生类似多线程数据安全问题,从而影响业务,产品口碑等;怎么解决呢？有如下几种方案
+用户使用缓存中的过时数据,就会产生类似多线程数据安全问题,从而影响业务,产品口碑等;怎么解决呢？有如下几种方案：
 
-Cache Aside Pattern 人工编码方式：缓存调用者在更新完数据库后再去更新缓存，也称之为双写方案
+一：Cache Aside Pattern 人工编码方式：缓存调用者在更新完数据库后再去更新缓存，也称之为双写方案
 
-Read/Write Through Pattern : 由系统本身完成，数据库与缓存的问题交由系统本身去处理
+二：Read/Write Through Pattern : 由系统本身完成，数据库与缓存的问题交由系统本身去处理
 
-Write Behind Caching Pattern ：调用者只操作缓存，其他线程去异步处理数据库，实现最终一致
+三：Write Behind Caching Pattern ：调用者只操作缓存，其他线程去异步处理数据库，实现最终一致
 
 ![1653322857620](https://cdn.jsdelivr.net/gh/HarveyLi040/images/D:%5Cgithub%5Cimages1653322857620.png)
 
@@ -1464,6 +1464,8 @@ Write Behind Caching Pattern ：调用者只操作缓存，其他线程去异步
 综合考虑使用方案一，但是方案一调用者如何处理呢？这里有几个问题
 
 操作缓存和数据库时有三个问题需要考虑：
+
+![img](https://img-blog.csdnimg.cn/4a69ec9be7b549498aff80c8ad1501ec.png)
 
 
 
