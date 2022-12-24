@@ -989,6 +989,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                         .setFieldValueEditor((fieldName, fieldValue) -> fieldValue.toString()));
 ```
 
+登录成功后查询redis,用户信息已经被缓存：
+
+![image-20221224132451419](https://cdn.jsdelivr.net/gh/HarveyLi040/images/D:%5Cgithub%5Cimages202212241325497.png)
+
 ### 1.9 解决状态登录刷新问题
 
 #### 1.9.1 初始方案思路总结：
@@ -1507,15 +1511,18 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 
 核心思路如下：
 
-修改ShopController中的业务逻辑，满足下面的需求：
+- 修改ShopController中的业务逻辑，满足下面的需求：
 
-根据id查询店铺时，如果缓存未命中，则查询数据库，将数据库结果写入缓存，并设置超时时间
 
-根据id修改店铺时，先修改数据库，再删除缓存
+- 根据id查询店铺时，如果缓存未命中，则查询数据库，将数据库结果写入缓存，并设置超时时间
 
-**修改重点代码1**：修改**ShopServiceImpl**的queryById方法
 
-**设置redis缓存时添加过期时间**
+- 根据id修改店铺时，先修改数据库，再删除缓存
+
+
+- **修改重点代码1**：修改**ShopServiceImpl**的queryById方法
+
+- **设置redis缓存时添加过期时间**
 
 ![1653325871232](https://cdn.jsdelivr.net/gh/HarveyLi040/images/D:%5Cgithub%5Cimages1653325871232.png)
 
