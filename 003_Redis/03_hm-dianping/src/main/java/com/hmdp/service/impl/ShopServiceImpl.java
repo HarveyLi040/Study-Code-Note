@@ -31,7 +31,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
     @Override
     public Result queryById(Long id) {
         // 1.从redis查询商铺缓存
-        // 最好用hash结构，此处用字符串也可以
+        // 最好用hash结构，此处用字符串演示
         String key = CACHE_SHOP_KEY + id;
         String shopJson = stringRedisTemplate.opsForValue().get(key);
 
@@ -41,7 +41,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
             Shop shop = JSONUtil.toBean(shopJson,Shop.class);
             return Result.ok(shop);
         }
-        // 4.不存在，查询数据库
+        // 4.不存在，根据id查询数据库
         Shop shop = getById(id);
 
         if (shop == null) {
@@ -51,7 +51,10 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 
         // 6.数据库中存在，写入redis
         stringRedisTemplate.opsForValue().set(key,JSONUtil.toJsonStr(shop));
+
         // 7.返回成功信息
         return Result.ok(shop);
+
+        http://localhost:8080/shop-detail.html?id=1
     }
 }

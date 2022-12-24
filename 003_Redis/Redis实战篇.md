@@ -1,4 +1,4 @@
-# 实战篇Redis
+实战篇Redis
 
 ## 开篇导读
 
@@ -1315,7 +1315,7 @@ public Result queryShopById(@PathVariable("id") Long id) {
 
 代码思路：如果缓存有，则直接返回，如果缓存不存在，则查询数据库，然后存入redis。
 
-![1653322190155](https://cdn.jsdelivr.net/gh/HarveyLi040/images/D:%5Cgithub%5Cimages1653322190155.png)
+![1653322190155](https://cdn.jsdelivr.net/gh/HarveyLi040/images/D:%5Cgithub%5Cimages202212241306336.png)
 
 **ShopController代码：**
 
