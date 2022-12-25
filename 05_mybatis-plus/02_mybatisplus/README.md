@@ -752,7 +752,7 @@ List<T> selectList(@Param(Constants.WRAPPER) Wrapper<T> queryWrapper);
     @Test
     public void testSelectList02() {
         QueryWrapper<User> wrapper = new QueryWrapper<User>();
-        wrapper.like("email","itcast"); //年龄大于23岁
+        wrapper.like("email","itcast"); //email包含itcast
 
         //根据条件查询数据
         List<User> users = this.userMapper.selectList(wrapper);
@@ -862,7 +862,7 @@ public class TestSelect {
 
 前面我们已经知道，MP在启动后会将BaseMapper中的一系列的方法注册到meppedStatements中，那么究竟是如 何注入的呢？流程又是怎么样的？下面我们将一起来分析下。 在MP中，ISqlInjector负责SQL的注入工作，它是一个接口，AbstractSqlInjector是它的实现类，实现关系如下：
 
-![image-20221226000811487](C:\Users\22418\AppData\Roaming\Typora\typora-user-images\image-20221226000811487.png)
+![image-20221226000811487](https://img-blog.csdnimg.cn/99eaab27b95a48b1b55ba6df4a9ee88f.png)
 
 
 
@@ -914,7 +914,7 @@ public abstract MappedStatement injectMappedStatement(Class<?> mapperClass, Clas
 
 查看该方法的实现：
 
-![image-20221226001327281](C:\Users\22418\AppData\Roaming\Typora\typora-user-images\image-20221226001327281.png)
+![image-20221226001327281](https://img-blog.csdnimg.cn/eb5db70a197a4c61857766caf55689cd.png)
 
 以SelectById为例查看：
 
@@ -933,4 +933,4 @@ public class SelectById extends AbstractMethod {
 
 可以看到，生成了SqlSource对象，再将SQL通过addSelectMappedStatement方法添加到meppedStatements中
 
-![image-20221226001536077](C:\Users\22418\AppData\Roaming\Typora\typora-user-images\image-20221226001536077.png)
+![image-20221226001536077](https://img-blog.csdnimg.cn/551f2c916965490c856a7a3e7bc1b539.png)
