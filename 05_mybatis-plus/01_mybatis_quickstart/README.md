@@ -135,9 +135,9 @@ select * from `tb_user`;
         </dependency>
 ```
 
-###  2.3 Mybatis + MP演示
+###  2.3 Mybatis实现查询User
 
-下面演示通过纯Mybatis与Mybatis-Plus整合
+下面演示通过纯Mybatis与Mybatis-Plus整合,利用Mybatis实现查询User
 
 **第一步，编写mybatis-config.xml文件：**
 
