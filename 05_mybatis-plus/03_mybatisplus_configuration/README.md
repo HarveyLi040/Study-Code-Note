@@ -208,3 +208,111 @@ value="com.baomidou.mybatisplus.samples.quickstart.entity"/>
 </mapper>
 ```
 
+# 2.其他配置 
+
+本部分（Configuration）的配置大都为 MyBatis 原生支持的配置，这意味着您可以通过 MyBatis XML 配置文件的形式进行配置
+
+##  2.1 mapUnderscoreToCamelCase 
+
+**mapUnderscoreToCamelCase** 
+
+是否开启自动驼峰命名规则（camel case）映射，即从经典数据库列名 A_COLUMN（下划线命名） 到经典 Java 属 性名 aColumn（驼峰命名） 的类似映射
+
+- 类型： boolean 
+
+- 默认值： true 
+
+**注意：** 
+
+- 此属性在 MyBatis 中原默认值为 false，在 MyBatis-Plus 中，此属性也将用于生成最终的 SQL 的 select body 
+
+- 如果您的数据库命名符合规则无需使用 @TableField 注解指定数据库字段名 示例（SpringBoot）：
+
+```properties
+#关闭自动驼峰映射，该参数不能和mybatis-plus.config-location同时存在
+mybatis-plus.configuration.map-underscore-to-camel-case=false
+```
+
+##  2.3 cacheEnabled
+
+- 类型： boolean 
+
+- 默认值： true 
+
+全局地开启或关闭配置文件中的所有映射器已经配置的任何缓存，默认为 true。 示例：
+
+```properties
+mybatis-plus.configuration.cache-enabled=false
+```
+
+# 3. DB 策略配置
+
+## 3.1 idType 
+
+- 类型： com.baomidou.mybatisplus.annotation.IdType 
+
+- 默认值： ID_WORKER 
+
+全局默认主键类型，设置后，即可省略实体对象中的@TableId(type = IdType.AUTO)配置
+
+SpringBoot：
+
+```properties
+mybatis-plus.global-config.db-config.id-type=auto
+```
+
+SpringMVC：
+
+```properties
+<!--这里使用MP提供的sqlSessionFactory，完成了Spring与MP的整合-->
+<bean id="sqlSessionFactory"
+class="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean">
+<property name="dataSource" ref="dataSource"/>
+<property name="globalConfig">
+<bean class="com.baomidou.mybatisplus.core.config.GlobalConfig">
+<property name="dbConfig">
+<bean
+class="com.baomidou.mybatisplus.core.config.GlobalConfig$DbConfig">
+<property name="idType" value="AUTO"/>
+</bean>
+</property>
+</bean>
+</property>
+</bean>
+
+```
+
+##  3.2 tablePrefix
+
+- 类型： String 
+
+- 默认值： null
+
+表名前缀，全局配置后可省略@TableName()配置
+
+SpringBoot：
+
+```properties
+mybatis-plus.global-config.db-config.table-prefix=tb_
+```
+
+SpringMVC：
+
+```xml
+<bean id="sqlSessionFactory"
+class="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean">
+<property name="dataSource" ref="dataSource"/>
+<property name="globalConfig">
+<bean class="com.baomidou.mybatisplus.core.config.GlobalConfig">
+<property name="dbConfig">
+<bean
+class="com.baomidou.mybatisplus.core.config.GlobalConfig$DbConfig">
+<property name="idType" value="AUTO"/>
+<property name="tablePrefix" value="tb_"/>
+</bean>
+</property>
+</bean>
+</property>
+</bean>
+```
+
