@@ -10,4 +10,6 @@ import com.lsl.mp.pojo.User;
  * @date 2022/12/25 14:37
  */
 public interface UserMapper extends BaseMapper<User> {
+
+    User findById(Long id);
 }
