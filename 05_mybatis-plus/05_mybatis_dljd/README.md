@@ -124,6 +124,8 @@ while(rs.next()){
 
 **ORM:对象关系映射**
 
+![001-ORM思想-对象关系映射](https://cdn.jsdelivr.net/gh/HarveyLi040/images/D:%5Cgithub%5Cimages202212292335005.png)
+
 - O (Object) : Java虚拟机中的Java对象
 
 - R (Relational):关系型数据库
