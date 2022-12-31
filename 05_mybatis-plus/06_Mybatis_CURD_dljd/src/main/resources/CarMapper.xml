@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="fdsafdsa">
+
+    <insert id="insertCar">
+        <!--insert into t_car(id,car_num,brand,guide_price,produce_time,car_type) values(null,#{k1},#{k2},#{k3},#{k4},#{k5});-->
+        <!--insert into t_car(id,car_num,brand,guide_price,produce_time,car_type) values(null,#{carNum},#{brand},#{guidePrice},#{produceTime},#{carType});-->
+
+        insert into t_car(id,car_num,brand,guide_price,produce_time,car_type)
+        values(null,#{carNum},#{brand},#{guidePrice},#{produceTime},#{carType})
+    </insert>
+
+    <delete id="deleteByCarNum">
+        delete
+        from t_car
+        where car_num = #{carNum}
+    </delete>
+
+    <delete id="deleteById">
+        delete
+        from t_car
+        where id = #{id}
+    </delete>
+
+
+    <update id="updateCarByPOJO">
+        update t_car
+        set car_num      = #{carNum},
+            brand        = #{brand},
+            guide_price  = #{guidePrice},
+            produce_time = #{produceTime},
+            car_type     = #{carType}
+        where id = #{id}
+    </update>
+
+    <update id="updateById">
+        update t_car
+        set car_num=#{carNum},
+            brand=#{brand},
+            guide_price=#{guidePrice},
+            produce_time=#{produceTime},
+            car_type=#{carType}
+        where id = #{id}
+    </update>
+
+    <!--    查询语句要有返回类型，否则出错-->
+    <!--    <select id="selectCarById">
+            select *
+            from t_car
+            where id = #{id}
+        </select>-->
+    <select id="selectCarById" resultType="com.lsl.code.pojo.Car">
+        select *
+        from t_car
+        where id = #{id}
+    </select>
+
+    <select id="selectCarByIdTwo" resultType="com.lsl.code.pojo.Car">
+        select id,
+               car_num      as carNum,
+               brand,
+               guide_price  as guidePrice,
+               produce_time as produceTime,
+               car_type     as carType
+        from t_car
+        where id = #{id}
+    </select>
+
+
+    <!--虽然结果是List集合，但是resultType属性需要指定的是List集合中元素的类型。-->
+    <select id="selectCarAll" resultType="com.lsl.code.pojo.Car">
+        <!--记得使⽤as起别名，让查询结果的字段名和java类的属性名对应上。-->
+        select id,
+        car_num as carNum,
+        brand, guide_price as guidePrice,
+        produce_time as produceTime,
+        car_type as carType
+        from t_car
+    </select>
+
+</mapper>
+
