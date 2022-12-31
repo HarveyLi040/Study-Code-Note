@@ -775,6 +775,8 @@ public void testSelectCarAll() {
 
 # 5. 关于SQL Mapper的namespace
 
+##  5.1 程序演示
+
 在SQL Mapper配置⽂件中标签的namespace属性可以翻译为命名空间，这个命名空间主要是 为了防⽌sqlId冲突的
 
 创建CarMapper2.xml⽂件，代码如下：
@@ -866,3 +868,26 @@ org.apache.ibatis.exceptions.PersistenceException:
 运行结果如下：
 
 ![image-20221231181743173](https://cdn.jsdelivr.net/gh/HarveyLi040/images/D:%5Cgithub%5Cimages202212311818438.png)
+
+##  5.2 总结
+
+```sh
+7. 在sql mapper.xml文件当中有一个namespace,这个属性是用来指定命名空间的。用来防止id重复。
+怎么用？
+    在xml文件中：
+        <mapper namespace="aaaaaaaaa">
+            <select id="selectAll" resultType="com.powernode.mybatis.pojo.Car">
+                select
+                    id,car_num as carNum,brand,guide_price as guidePrice,
+                    produce_time as produceTime,
+                    car_type
+                from
+                    t_car
+            </select>
+        </mapper>
+    在java程序中的写法：
+        List<Object> cars = sqlSession.selectList("aaaaaaaaa.selectAll");
+
+    实际上，本质上，mybatis中的sqlId的完整写法：
+        namespace.id
+```
