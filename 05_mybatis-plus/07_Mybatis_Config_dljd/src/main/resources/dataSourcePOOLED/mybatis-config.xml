@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <environments default="dev">
+        <environment id="dev">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://localhost:3306/mp"/>
+                <property name="username" value="root"/>
+                <property name="password" value="W135246W"/>
+                <!--最⼤连接数-->
+                <!--提醒：正常使用连接池的话，池中有很多参数是需要设置的。设置好参数，可以让连接池发挥的更好。事半功倍的效果。-->
+                <!--具体连接池当中的参数如何配置呢？需要反复的根据当前业务情况进行测试。-->
+                <!--poolMaximumActiveConnections：连接池当中最多的正在使用的连接对象的数量上限。最多有多少个连接可以活动。默认值10-->
+                <property name="poolMaximumActiveConnections" value="3"/>
+                <!--最多空闲数量-->
+                <property name="poolMaximumIdleConnections" value="1"/>
+                <!--强⾏回归池的时间-->
+                <property name="poolMaximumCheckoutTime" value="20000"/>
+                <!--这是⼀个底层设置，如果获取连接花费了相当⻓的时间，连接池会打印状
+               态⽇志并重新尝试获取⼀个连接（避免在误配置的情况下⼀直失败且不打印⽇志），默认值：20000
+               毫秒（即 20 秒）。-->
+                <!--每隔2秒打印日志，并且尝试获取连接对象-->
+                <property name="poolTimeToWait" value="20000"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <mapper resource="CarMapper.xml"/>
+    </mappers>
+</configuration>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+    <!--java.util.Properties类。是一个Map集合。key和value都是String类型-->
+    <!--在properties标签中可以配置很多属性-->
+    <!--<properties>-->
+    <!--这是其中的一个属性-->
+    <!--<property name="属性名" value="属性值"/>-->
+    <!--<property name="jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+    <property name="jdbc.url" value="jdbc:mysql://localhost:3306/powernode"/>
+    <property name="jdbc.username" value="root"/>
+    <property name="jdbc.password" value="root"/>-->
+    <!--</properties>-->
+
+    <!--resource,一定是从类路径下开始查找资源-->
+    <properties resource="jdbc.properties"/>
+
+    <!--从绝对路径当中加载资源。绝对路径怎么写？file:///路径-->
+    <!--<properties url="file:///d:/jdbc.properties" />-->
+
+    <environments default="powernodeDB">
+        <environment id="powernodeDB">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+                <property name="poolMaximumActiveConnections" value="10"/>
+                <!--每隔2秒打印日志，并且尝试获取连接对象-->
+                <property name="poolTimeToWait" value="2000"/>
+                <!--强行让某个连接空闲，超时时间的设置-->
+                <property name="poolMaximumCheckoutTime" value="10000"/>
+                <!--最多的空闲数量-->
+                <property name="poolMaximumIdleConnections" value="5"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <mapper resource="CarMapper.xml"/>
+    </mappers>
+</configuration>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="car">
+    <insert id="insertCar">
+        insert into t_car(id, car_num, brand, guide_price, produce_time, car_type)
+        values (null, #{carNum}, #{brand}, #{guidePrice}, #{produceTime}, #{carType})
+    </insert>
+
+    <select id="selectCarByCarNum" resultType="com.lsl.code.pojo.Car">
+        select id, car_num carNum, brand, guide_price guidePrice, produce_time produceTime, car_type carType
+        from t_car
+        where car_num = '100'
+    </select>
+
+
+    <select id="selectById" resultType="com.lsl.code.pojo.Car">
+        <!--select * from t_car where id = #{id}-->
+        select
+        id,car_num as carNum,brand,guide_price as guidePrice,
+        produce_time as produceTime,
+        car_type as carType
+        from
+        t_car
+        where
+        id = #{id}
+    </select>
+</mapper>
