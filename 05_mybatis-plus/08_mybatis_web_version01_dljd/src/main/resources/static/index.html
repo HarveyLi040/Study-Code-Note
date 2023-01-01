@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>银⾏账户转账</title>
+</head>
+<body>
+<!--/bank是应⽤的根，部署web应⽤到tomcat的时候⼀定要注意这个名字-->
+<form action="/bank/transfer" method="post">
+    转出账户：<input type="text" name="fromActno"/><br>
+    转⼊账户：<input type="text" name="toActno"/><br>
+    转账⾦额：<input type="text" name="money"/><br>
+    <input type="submit" value="转账"/>
+</form>
+</body>
+</html>
