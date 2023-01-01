@@ -1631,7 +1631,7 @@ void testSaveUser() throws JsonProcessingException {
 
 此时我们再来看一看存储的数据，小伙伴们就会发现那个class数据已经不在了，节约了我们的空间~
 
-![1653054945211](D:\learn\7、2022版Redis入门到精通\Redis-笔记资料\01-入门篇\讲义\Redis注释版\Redis.assets\1653054945211.png)
+![1653054945211](https://cdn.jsdelivr.net/gh/HarveyLi040/images/D:%5Cgithub%5Cimages202301020216683.png)
 
 最后小总结：
 
